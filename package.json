@@ -1,0 +1,24 @@
+{
+  "name": "timesheets",
+  "version": "1.0.0",
+  "description": "time tracker for stemn",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sabrehagen/stemn-timesheets.git"
+  },
+  "keywords": [
+    "timesheet",
+    "time",
+    "tracker"
+  ],
+  "author": "Jackson Delahunt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sabrehagen/stemn-timesheets/issues"
+  },
+  "homepage": "https://github.com/sabrehagen/stemn-timesheets#readme"
+}
