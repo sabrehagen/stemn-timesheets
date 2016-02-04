@@ -22,7 +22,7 @@ const isNewTask = {
 const getNewTask = [{
     type : 'input',
     name : 'newTask',
-    message : `What ${chalk.green('new task')} have you done in the last ${chalk.red(lastTaskUpdated + ' mins')}?`
+    message : `What ${chalk.yellow('new task')} have you done in the last ${chalk.red(lastTaskUpdated + ' mins')}?`
 }, {
     type : 'list',
     name : 'taskCategory',
