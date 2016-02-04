@@ -1,0 +1,8 @@
+{
+  "restartable": "rs",
+  "ignore": [
+    ".git",
+    "db.json",
+    "node_modules"
+  ]
+}
