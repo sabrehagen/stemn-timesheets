@@ -36,6 +36,7 @@ const getRecentProgress = {
     message : `What have you done in the last ${lastTaskTimeAgo} minutes? (default: still ${chalk.yellow(lastTask.task)})`
 };
 
+// error handler for when database access fails
 const dbErrorHandler = (err) => {
     console.log(`Encountered error '${err}' when saving to database`);
 }
