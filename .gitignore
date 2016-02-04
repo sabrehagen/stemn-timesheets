@@ -1,4 +1,4 @@
 node_modules
 
 // don't include the user's timesheet data
-db.json
+timesheet.json

@@ -2,12 +2,13 @@ const inquirer = require('inquirer-bluebird');
 const chalk = require('chalk');
 const low = require('lowdb');
 const storage = require('lowdb/file-async');
-const db = low('db.json', { storage });
+const db = low('timesheet.json', { storage });
 
 // get the last task from the db
 const timesheet = db('timesheet');
 const lastTask = timesheet.last();
 const lastTaskTimeAgo = ((Date.now() - lastTask.start) / (1000 * 60)).toFixed(1);
+const lastTaskUpdated = ((Date.now() - lastTask.updated) / (1000 * 60)).toFixed(1);
 
 // question to determine if the user is working on a new task
 const isNewTask = {
@@ -21,7 +22,7 @@ const isNewTask = {
 const getNewTask = [{
     type : 'input',
     name : 'newTask',
-    message : `What ${chalk.green('new task')} have you done in the last ${lastTaskTimeAgo} minutes?`
+    message : `What ${chalk.green('new task')} have you done in the last ${chalk.red(lastTaskUpdated + ' mins')}?`
 }, {
     type : 'list',
     name : 'taskCategory',
@@ -33,7 +34,7 @@ const getNewTask = [{
 const getRecentProgress = {
     type : 'input',
     name : 'recentlyDone',
-    message : `What have you done in the last ${lastTaskTimeAgo} minutes? (default: still ${chalk.yellow(lastTask.task)})`
+    message : `What have you done in the last ${chalk.red(lastTaskUpdated + ' mins')}? (default: still ${chalk.yellow(lastTask.task)})`
 };
 
 // error handler for when database access fails
@@ -55,7 +56,8 @@ const createNewTask = (answers) => {
     const createNewTask = timesheet.push({
         start : Date.now(),
         task : answers.newTask,
-        category : answers.taskCategory
+        category : answers.taskCategory,
+        updated : Date.now()
     });
 
     return Promise.all([updateOldTask, createNewTask])
@@ -67,7 +69,7 @@ const updateExistingTask = (answers) => {
         return timesheet
             .chain()
             .find({ task : lastTask.task })
-            .assign({ task : lastTask.task + ', ' + answers.recentlyDone })
+            .assign({ task : lastTask.task + ', ' + answers.recentlyDone, updated : Date.now() })
             .value();
     }
 };

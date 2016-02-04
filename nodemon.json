@@ -2,7 +2,7 @@
   "restartable": "rs",
   "ignore": [
     ".git",
-    "db.json",
+    "timesheet.json",
     "node_modules"
   ]
 }
