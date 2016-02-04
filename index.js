@@ -39,6 +39,7 @@ const getRecentProgress = {
 // error handler for when database access fails
 const dbErrorHandler = (err) => {
     console.log(`Encountered error '${err}' when saving to database`);
+    process.exit(1);
 }
 
 // create a new task and close off the old task
