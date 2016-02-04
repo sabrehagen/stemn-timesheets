@@ -36,6 +36,10 @@ const getRecentProgress = {
     message : `What have you done in the last ${lastTaskTimeAgo} minutes? (default: still ${chalk.yellow(lastTask.task)})`
 };
 
+const dbErrorHandler = (err) => {
+    console.log(`Encountered error '${err}' when saving to database`);
+}
+
 // create a new task and close off the old task
 const createNewTask = (answers) => {
     // update the closed off task
@@ -52,13 +56,18 @@ const createNewTask = (answers) => {
         category : answers.taskCategory
     });
 
-    return Promise.all([updateOldTask, createNewTask]);
+    return Promise.all([updateOldTask, createNewTask]).catch(dbErrorHandler);
 };
 
 // if new progress was provided, add it to the existing task
 const updateExistingTask = (answers) => {
     if (answers.recentlyDone) {
-        return timesheet.chain().find({ task : lastTask.task }).assign({ task : lastTask.task + ', ' + answers.recentlyDone }).value();
+        return timesheet
+            .chain()
+            .find({ task : lastTask.task })
+            .assign({ task : lastTask.task + ', ' + answers.recentlyDone })
+            .value()
+            .catch(dbErrorHandler);
     }
 };
 
