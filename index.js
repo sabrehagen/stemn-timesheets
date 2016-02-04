@@ -57,7 +57,9 @@ const createNewTask = (answers) => {
         category : answers.taskCategory
     });
 
-    return Promise.all([updateOldTask, createNewTask]).catch(dbErrorHandler);
+    return Promise
+        .all([updateOldTask, createNewTask])
+        .catch(dbErrorHandler);
 };
 
 // if new progress was provided, add it to the existing task
