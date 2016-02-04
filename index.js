@@ -46,13 +46,11 @@ const createNewTask = (answers) => {
         .value();
 
     // create a new task
-    const newTask = {
+    const createNewTask = timesheet.push({
         start : Date.now(),
         task : answers.newTask,
         category : answers.taskCategory
-    };
-
-    const createNewTask = timesheet.push(newTask);
+    });
 
     return Promise.all([updateOldTask, createNewTask]);
 };
