@@ -1,7 +1,7 @@
 const inquirer = require('inquirer-bluebird');
 const chalk = require('chalk');
 const low = require('lowdb');
-const storage = require('lowdb/file-sync');
+const storage = require('lowdb/file-async');
 const db = low('db.json', { storage });
 
 // get the last task from the db
@@ -38,22 +38,35 @@ const getRecentProgress = {
 
 // create a new task and close off the old task
 const createNewTask = (answers) => {
-    timesheet.chain().find({ task : lastTask.task }).assign({ task : lastTask.task + ', ' + answers.recentlyDone, duration : Date.now() - lastTaskTimeAgo }).value();
-    timesheet.push({ start : Date.now(), task : answers.newTask, category : answers.taskCategory });
+    // update the closed off task
+    const updateOldTask = timesheet
+        .chain()
+        .find({ task : lastTask.task })
+        .assign({ duration : Date.now() - lastTask.start })
+        .value();
+
+    // create a new task
+    const newTask = {
+        start : Date.now(),
+        task : answers.newTask,
+        category : answers.taskCategory
+    };
+
+    const createNewTask = timesheet.push(newTask);
+
+    return Promise.all([updateOldTask, createNewTask]);
 };
 
 // if new progress was provided, add it to the existing task
 const updateExistingTask = (answers) => {
     if (answers.recentlyDone) {
-        timesheet.chain().find({ task : lastTask.task }).assign({ task : lastTask.task + ', ' + answers.recentlyDone }).value();
+        return timesheet.chain().find({ task : lastTask.task }).assign({ task : lastTask.task + ', ' + answers.recentlyDone }).value();
     }
 };
 
 // run question sequence
 inquirer.prompt(isNewTask).then((answers) => {
-    if (answers.newTask) {
-        inquirer.prompt(getNewTask).then(createNewTask);
-    } else {
+    return answers.newTask ?
+        inquirer.prompt(getNewTask).then(createNewTask) :
         inquirer.prompt(getRecentProgress).then(updateExistingTask);
-    }
 });
