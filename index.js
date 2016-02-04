@@ -1,13 +1,59 @@
 const inquirer = require('inquirer-bluebird');
-const lastTask = 'developing stemn';
-const yesNo = ['Yes', 'No'];
+const chalk = require('chalk');
+const low = require('lowdb');
+const storage = require('lowdb/file-sync');
+const db = low('db.json', { storage });
 
-inquirer([{
-    type : 'confirm',
-    name : 'sameTask',
-    message : `Are you working on a new task since ${lastTask}?`,
-    choices : yesNo
-}])
-.then(function(answers) {
-    console.log(answers);
+// get the last task from the db
+const timesheet = db('timesheet');
+const lastTask = timesheet.last();
+const lastTaskTimeAgo = ((Date.now() - lastTask.start) / (1000 * 60)).toFixed(1);
+
+// question to determine if the user is working on a new task
+const isNewTask = {
+    type : 'list',
+    name : 'newTask',
+    message : `Are you working on a new task since ${chalk.yellow(lastTask.task)} (started ${chalk.red(`${lastTaskTimeAgo} mins`)} ago in ${chalk.cyan(lastTask.category)})?`,
+    choices : [{ name : 'No', value : false }, { name : 'Yes', value : true }]
+};
+
+// questions to get the new task
+const getNewTask = [{
+    type : 'input',
+    name : 'newTask',
+    message : `What ${chalk.green('new task')} have you done in the last ${lastTaskTimeAgo} minutes?`
+}, {
+    type : 'list',
+    name : 'taskCategory',
+    message : `What ${chalk.cyan('category')} is this new task?`,
+    choices : ['Development', 'Internal', 'Meeting', 'Personal', 'Contract work', 'Dinner', 'Email', 'Lunch', 'Management', 'Marketing', 'Product', 'Social Media']
+}];
+
+// question to get the recent progress on the current task
+const getRecentProgress = {
+    type : 'input',
+    name : 'recentlyDone',
+    message : `What have you done in the last ${lastTaskTimeAgo} minutes? (default: still ${chalk.yellow(lastTask.task)})`
+};
+
+// create a new task and close off the old task
+const createNewTask = (answers) => {
+    timesheet.chain().find({ task : lastTask.task }).assign({ task : lastTask.task + ', ' + answers.recentlyDone, duration : Date.now() - lastTaskTimeAgo }).value();
+    timesheet.push({ start : Date.now(), task : answers.newTask, category : answers.taskCategory });
+};
+
+// if new progress was provided, add it to the existing task
+const updateExistingTask = (answers) => {
+    if (answers.recentlyDone) {
+        timesheet.chain().find({ task : lastTask.task }).assign({ task : lastTask.task + ', ' + answers.recentlyDone }).value();
+    }
+};
+
+// run question sequence
+inquirer.prompt(isNewTask).then((answers) => {
+    if (answers.newTask) {
+        inquirer.prompt(getNewTask).then(createNewTask);
+    } else {
+        inquirer.prompt(getRecentProgress).then(updateExistingTask);
+    }
 });

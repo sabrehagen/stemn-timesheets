@@ -20,5 +20,11 @@
   "bugs": {
     "url": "https://github.com/sabrehagen/stemn-timesheets/issues"
   },
-  "homepage": "https://github.com/sabrehagen/stemn-timesheets#readme"
+  "homepage": "https://github.com/sabrehagen/stemn-timesheets#readme",
+  "dependencies": {
+    "bluebird": "^3.2.1",
+    "chalk": "^1.1.1",
+    "inquirer-bluebird": "^1.0.4",
+    "lowdb": "^0.12.2"
+  }
 }
