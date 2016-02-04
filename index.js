@@ -58,9 +58,7 @@ const createNewTask = (answers) => {
         category : answers.taskCategory
     });
 
-    return Promise
-        .all([updateOldTask, createNewTask])
-        .catch(dbErrorHandler);
+    return Promise.all([updateOldTask, createNewTask])
 };
 
 // if new progress was provided, add it to the existing task
@@ -70,8 +68,7 @@ const updateExistingTask = (answers) => {
             .chain()
             .find({ task : lastTask.task })
             .assign({ task : lastTask.task + ', ' + answers.recentlyDone })
-            .value()
-            .catch(dbErrorHandler);
+            .value();
     }
 };
 
@@ -80,4 +77,4 @@ inquirer.prompt(isNewTask).then((answers) => {
     return answers.newTask ?
         inquirer.prompt(getNewTask).then(createNewTask) :
         inquirer.prompt(getRecentProgress).then(updateExistingTask);
-});
+}).catch(dbErrorHandler);
