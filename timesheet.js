@@ -15,8 +15,8 @@ const lastTaskUpdated = ((Date.now() - lastTask.updated) / (1000 * 60)).toFixed(
 const isNewTask = {
     type : 'list',
     name : 'newTask',
-    message : `Are you working on a new task since ${chalk.yellow(lastTask.task)} (started ${chalk.red(`${lastTaskTimeAgo} mins`)} ago in ${chalk.cyan(lastTask.category)})?`,
-    choices : [{ name : 'No', value : false }, { name : 'Yes', value : true }]
+    message : `Are you still working on ${chalk.yellow(lastTask.task)} (started ${chalk.red(`${lastTaskTimeAgo} mins`)} ago in ${chalk.cyan(lastTask.category)})?`,
+    choices : [{ name : 'Yes', value : false }, { name : 'No', value : true }]
 };
 
 // questions to get the new task
