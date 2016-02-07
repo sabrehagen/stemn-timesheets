@@ -16,4 +16,4 @@ do
   post=`tail -c 50 /tmp/test.log`
 done
 
-DISPLAY=:0.0 xfce4-terminal -x sh -c "node /home/jackson/repositories/timesheets/timesheet.js"
+DISPLAY=:0.0 xfce4-terminal --geometry 150x20 -x sh -c "node /home/jackson/repositories/timesheets/timesheet.js"
