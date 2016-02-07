@@ -4,7 +4,7 @@ pre="not post"
 post="not pre"
 alreadyRunning=`ps aux | grep timesheet.js | grep -v grep | wc -l`
 
-if [ $alreadyRunning -eq 1 ]
+if [ $alreadyRunning -gt 0 ]
 then
   exit 0
 fi
@@ -16,4 +16,4 @@ do
   post=`tail -c 50 /tmp/test.log`
 done
 
-xfce4-terminal -x sh -c "node /home/jackson/repositories/timesheets/timesheet.js"
+DISPLAY=:0.0 xfce4-terminal -x sh -c "node /home/jackson/repositories/timesheets/timesheet.js"

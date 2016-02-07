@@ -1,8 +1,9 @@
+const path = require('path');
 const inquirer = require('inquirer-bluebird');
 const chalk = require('chalk');
 const low = require('lowdb');
 const storage = require('lowdb/file-async');
-const db = low('timesheet.json', { storage });
+const db = low(path.join(__dirname, 'timesheet.json'), { storage });
 
 // get the last task from the db
 const timesheet = db('timesheet');
