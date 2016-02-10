@@ -66,13 +66,13 @@ const createNewTask = (answers) => {
 
 // if new progress was provided, add it to the existing task
 const updateExistingTask = (answers) => {
-    if (answers.recentlyDone) {
-        return timesheet
-            .chain()
-            .find({ task : lastTask.task })
-            .assign({ task : lastTask.task + ', ' + answers.recentlyDone, updated : Date.now() })
-            .value();
-    }
+    const taskUpdate = answers.recentlyDone ? lastTask.task + ', ' + answers.recentlyDone : lastTask.task;
+
+    return timesheet
+        .chain()
+        .find({ task : lastTask.task })
+        .assign({ task : taskUpdate, updated : Date.now() })
+        .value();
 };
 
 // run question sequence
