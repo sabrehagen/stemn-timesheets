@@ -10,6 +10,7 @@ const timesheet = db('timesheet');
 const lastTask = timesheet.last();
 const lastTaskTimeAgo = ((Date.now() - lastTask.start) / (1000 * 60)).toFixed(1);
 const lastTaskUpdated = ((Date.now() - lastTask.updated) / (1000 * 60)).toFixed(1);
+const absent = 'Absent';
 
 // question to determine if the user is working on a new task
 const isNewTask = {
@@ -75,8 +76,39 @@ const updateExistingTask = (answers) => {
         .value();
 };
 
+const earlyExit = () => {
+    // update the closed off task
+    const updateAbsentTask = timesheet
+        .chain()
+        .find({ task : lastTask.task })
+        .assign({ duration : Date.now() - lastTask.start, updated : Date.now() })
+        .value();
+
+    // create a new task
+    const createAbsentTask = timesheet.push({
+        start : Date.now(),
+        task : absent,
+        category : 'Personal',
+        updated : Date.now()
+    });
+
+    // extend the last task's time if it was absent
+    const exitTask = lastTask.task === absent ? updateAbsentTask : createAbsentTask;
+    exitTask.then(() => {
+        // have to wait 1 second for the database to flush
+        setTimeout(() => process.exit(1), 1000);
+    });
+};
+
+// early exit if inactive
+const inactiveTimeout = 1000 * 20;
+const exitTimer = setTimeout(earlyExit, inactiveTimeout);
+
 // run question sequence
 inquirer.prompt(isNewTask).then((answers) => {
+    // clear the early exit timeout if there has been a response
+    clearTimeout(exitTimer);
+
     return answers.newTask ?
         inquirer.prompt(getNewTask).then(createNewTask) :
         inquirer.prompt(getRecentProgress).then(updateExistingTask);
