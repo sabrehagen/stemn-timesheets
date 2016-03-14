@@ -109,6 +109,7 @@ inquirer.prompt(isNewTask).then((answers) => {
     // clear the early exit timeout if there has been a response
     clearTimeout(exitTimer);
 
+    // prompt for what new work has been done
     return answers.newTask ?
         inquirer.prompt(getNewTask).then(createNewTask) :
         inquirer.prompt(getRecentProgress).then(updateExistingTask);
